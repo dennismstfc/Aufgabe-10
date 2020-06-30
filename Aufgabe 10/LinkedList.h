@@ -11,51 +11,34 @@ public:
 	LinkedList();
 	~LinkedList() = default;
 
-	/*struct node {
-		node* next; 
-		dataType item;
-	};*/
-
 
 	class Element {
 	public:
 		Element();
 		~Element();
 		dataType getData();
-		dataType setData(dataType data);
-		std::shared_ptr<Element> next = std::make_shared<Element>(Element());
-
-	private:
+		void setData(dataType data);
+		std::weak_ptr<Element> next;
 		dataType m_data;
 	};
 
-	void setElement(dataType data);
-	dataType getElement();
-	
-	void previous();
-	void next();
-	void last();
-	int getSize();
+	dataType getLastElement();
 	void append(dataType data);
 
 
 private:
-	std::shared_ptr<Element> iterator;
 	std::shared_ptr<Element> tail;
 	std::shared_ptr<Element> head;
+
 };
 
-template<class dataType>
-inline LinkedList<dataType>::Element::Element()
-{
-	std::cout << "Create: " << typeid(this).name() << std::endl;
-}
 
 template<class dataType>
-inline LinkedList<dataType>::Element::~Element()
+inline void LinkedList<dataType>::Element::setData(dataType data)
 {
-	std::cout << "Delete: " << typeid(this).name() << std::endl;
+	m_data = data;
 }
+
 
 template<class dataType>
 inline dataType LinkedList<dataType>::Element::getData()
@@ -63,33 +46,44 @@ inline dataType LinkedList<dataType>::Element::getData()
 	return m_data;
 }
 
+template<class dataType>
+inline LinkedList<dataType>::Element::Element()
+{
+	//std::cout << "Create: " << typeid(this).name() << std::endl;
+}
 
 template<class dataType>
-inline dataType LinkedList<dataType>::Element::setData(dataType data)
+inline LinkedList<dataType>::Element::~Element()
 {
-	m_data = data;
+	//std::cout << "Delete: " << typeid(this).name() << std::endl;
 }
+
 
 template<class dataType>
 inline LinkedList<dataType>::LinkedList()
 {
+	tail = nullptr;
 	head = nullptr;
 }
 
 template<class dataType>
-inline dataType LinkedList<dataType>::getElement()
+inline dataType LinkedList<dataType>::getLastElement()
 {
-	return iterator->getData();
+	return head->getData();
 }
 
 template<class dataType>
 inline void LinkedList<dataType>::append(dataType data)
 {
-	head = std::make_shared<Element>(Element());
 	tail = std::make_shared<Element>(Element());
-	std::shared_ptr<Element> previousElement = std::make_shared<Element>(Element());
-	previousElement = head;
+	head = std::make_shared<Element>(Element());
+	std::shared_ptr<Element> prevElement = head;
+	head->setData(data);
 
-	head = data;
-	tail = head; 	 
+	if (tail != nullptr) {
+		prevElement->next = head;
+	}
+	else {
+		tail = head;
+	}
 }
